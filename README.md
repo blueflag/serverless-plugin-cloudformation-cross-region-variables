@@ -1,0 +1,1 @@
+# serverless-plugin-cloudformation-cross-region-variables
