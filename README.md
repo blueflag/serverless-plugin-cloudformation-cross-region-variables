@@ -1,6 +1,8 @@
-# serverless-cloudformations-crossregion-vars
+# serverless-plugin-cloudformation-cross-region-variables 
 
-This plugin supports taking [outputs](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) from serverless cloudformation stacks in different regions.
+This plugin supports using [coudformation stack outputs](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) from stacks in different regions.
+
+Adds new variable syntax to serverless formatted as such `${cfcr:Region:StackName:OutputKey}`
 
 ## Usage
 
@@ -11,7 +13,7 @@ custom:
   myServiceEndpoint: ${cfcr:us-east-1:other-stack-name-${opt:stage}:ServiceEndpoint}
 
 plugins:
-  - serverless-cloudformations-crossregion-vars
+  - serverless-plugin-cloudformation-cross-region-variables 
 ```
 
 
