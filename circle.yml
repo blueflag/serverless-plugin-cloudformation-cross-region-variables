@@ -1,0 +1,48 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: blueflag/circle-node:0.0.3
+version: 2
+jobs:
+  dependencies:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: workspace-dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install Workspace Dependencies
+          command: yarn install
+      - save_cache:
+          key: workspace-dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: workspace-dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Build deploy script
+          command: yarn build
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: workspace-dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Build deploy script
+          command: yarn test
+workflows:
+  version: 2
+  build_test:
+    jobs:
+      - dependencies
+      - build:
+          requires:
+            - dependencies
+      - test:
+          requires:
+            - dependencies
