@@ -1,18 +1,20 @@
-// TODO: Consider using nodegit instead
-
 var AWS = require('aws-sdk')
 var Observable = require('rxjs/Rx').Observable
 const CF_PREFIX = 'cfcr'
 const CF_SPLIT = /(cfcr):(.*?):(.*?):([0-9a-zA-Z]*)/
+const CF_SPLIT_DOT = /(cfcr):(.*?)\.(.*?):([0-9a-zA-Z]*)/
 
 export default class ServerlessCFCrossRegionVariables {
   constructor(serverless, options) {
     this.resolvedValues = {}
     const delegate = serverless.variables.getValueFromSource.bind(serverless.variables)
-
     serverless.variables.getValueFromSource = (variableString) => {
       if (variableString.startsWith(`${CF_PREFIX}:`)) {
-        return this._getValue(CF_SPLIT.exec(variableString))
+        var split = CF_SPLIT.exec(variableString) || CF_SPLIT_DOT.exec(variableString);
+        if(split === null){
+          throw new Error(`Invalid syntax, must be cfcr:region:service:output got "${variableString}"`)
+        }
+        return this._getValue(split)
       }
 
       return delegate(variableString)
