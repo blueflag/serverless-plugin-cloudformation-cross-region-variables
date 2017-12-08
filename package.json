@@ -8,8 +8,7 @@
     "test": "nyc ava"
   },
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "dependencies": {
     "ava": "^0.24.0",
