@@ -1,0 +1,51 @@
+{
+  "name": "serverless-cloudformations-crossregion-vars",
+  "version": "1.0.0",
+  "description": "Serverless plugin to get varibles from cross region cloudformation templates",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "aws-cli": "^0.0.1",
+    "babel-plugin-espower": "^2.3.2",
+    "babel-preset-blueflag": "^0.6.0",
+    "babel-runtime": "6.23.0",
+    "rxjs": "^5.5.5"
+  },
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-core": "6.21.0",
+    "babel-eslint": "7.1.1",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-object-rest-spread": "6.23.0",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-preset-env": "1.4.0",
+    "babel-register": "6.18.0",
+    "cross-env": "3.1.4",
+    "eslint": "3.13.1",
+    "eslint-config-standard": "6.2.1",
+    "eslint-plugin-ava": "4.0.1",
+    "eslint-plugin-promise": "3.4.0",
+    "eslint-plugin-standard": "2.0.1",
+    "serverless": "1.17.0"
+  },
+  "keywords": [
+    "serverless",
+    "serverless applications",
+    "aws",
+    "aws lambda",
+    "amazon",
+    "amazon web services",
+    "serverless.com"
+  ],
+  "peerDependencies": {
+    "serverless": ">=1.16.0"
+  },
+  "author": "Paul Esson",
+  "license": "MIT"
+}
