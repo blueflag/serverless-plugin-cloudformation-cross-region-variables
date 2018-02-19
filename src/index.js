@@ -47,11 +47,11 @@ export default class ServerlessCFCrossRegionVariables {
           .take(1)
           .toPromise()
         if (!value) {
-          throw new Error(`Output ${variable} could not be found in Stack ${stack} region ${region}`)
+          console.warn(`Output ${variable} could not be found in Stack ${stack} region ${region}`)
         }
       }
     } else {
-      throw new Error(`Stack ${stack} could not be found in region ${region}`)
+      console.warn(`Stack ${stack} could not be found in region ${region}`)
     }
     // Cache before returning
     this.resolvedValues[`${region}-${stack}-${variable}`] = value
