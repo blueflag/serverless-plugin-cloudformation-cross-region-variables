@@ -55,7 +55,7 @@ test('Correctly throws an error on incorrect syntax', async t => {
   await t.throws(() => sls.variables.populateService(), /Invalid syntax, must be cfcr:region:service:output got/)
 })
 
-test('Correctly throws an error if var cant be found', async t => {
+test('Returns an error if var can`t be found', async t => {
   var serverlessCFVariables = proxyquire.noCallThru()('../src', {
     'aws-sdk': {
       CloudFormation: () => ({
@@ -80,6 +80,6 @@ test('Correctly throws an error if var cant be found', async t => {
   })
   const sls = buildSls(serverlessCFVariables)
   sls.service.custom.myResoledVar = '${cfcr:region:servicename:ServiceEndpoint}' // eslint-disable-lin
-  let ee = await sls.variables.populateService().catch(ee => ee)
-  t.is(ee.message, "Output ServiceEndpoint could not be found in Stack servicename region region");
+  let result = await sls.variables.populateService();
+  t.true(typeof sls.service.custom.myResoledVar === 'undefined');
 })
