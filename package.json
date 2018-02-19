@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-cloudformation-cross-region-variables",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Serverless plugin to get varibles from cross region cloudformation templates",
   "main": "lib/index.js",
   "scripts": {
