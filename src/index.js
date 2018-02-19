@@ -45,8 +45,14 @@ export default class ServerlessCFCrossRegionVariables {
      value = await ssm
       .getParameter({Name: variable})
       .promise()
-      .then(ii => ii.Value);
+      .then(ii => ii.Value)
+      .catch(ee => {
+        return;
+      });
     this.resolvedValues[variableString] = value
+    if (!value) {
+      console.warn(`Output ${variable} could not be found in region ${region}`)
+    }
     return value;  
   }
 
@@ -68,7 +74,6 @@ export default class ServerlessCFCrossRegionVariables {
           .take(1)
           .toPromise()
         if (!value) {
-          console.log('value', value)
           console.warn(`Output ${variable} could not be found in Stack ${stack} region ${region}`)
         }
       }
