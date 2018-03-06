@@ -83,3 +83,26 @@ test('Returns an error if var can`t be found', async t => {
   let result = await sls.variables.populateService();
   t.true(typeof sls.service.custom.myResoledVar === 'undefined');
 })
+
+
+
+test('Correctly parses ssm vars', async t => {
+  var serverlessCFVariables = proxyquire.noCallThru()('../src', {
+    'aws-sdk': {
+      SSM: () => ({
+        getParameter: () => ({
+          promise: () => Promise.resolve({
+              "Parameter":
+                  {
+                      "Value": "https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev",
+                  }
+          })
+        })
+      })
+    }
+  })
+  const sls = buildSls(serverlessCFVariables)
+  sls.service.custom.myResoledVar = '${ssmcr:region:name}' // eslint-disable-lin
+  await sls.variables.populateService()
+  t.is(sls.service.custom.myResoledVar, 'https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev')
+})

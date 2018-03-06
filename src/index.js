@@ -45,7 +45,9 @@ export default class ServerlessCFCrossRegionVariables {
      value = await ssm
       .getParameter({Name: variable})
       .promise()
-      .then(ii => ii.Value)
+      .then(({Parameter}) => {
+        return Parameter.Value
+      })
       .catch(ee => {
         return;
       });
