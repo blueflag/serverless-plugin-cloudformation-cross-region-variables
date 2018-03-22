@@ -8,6 +8,7 @@ function buildSls(serverlessCFVariables) {
   sls.pluginManager.addPlugin(serverlessCFVariables)
   sls.init()
   return sls
+
 }
 
 test('Variables are passed through', async t => {
@@ -21,31 +22,16 @@ test('Variables are passed through', async t => {
 
 test('Correctly parses vars', async t => {
   var serverlessCFVariables = proxyquire.noCallThru()('../src', {
-    'aws-sdk': {
-      CloudFormation: () => ({
-        describeStacks: () => ({
-          promise: () => Promise.resolve({
-              Stacks: 
-              [
-                {
-                  "Outputs": [
-                      {
-                          "OutputKey": "ServiceEndpoint",
-                          "OutputValue": "https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev",
-                          "Description": "URL of the service endpoint"
-                      }
-                  ]
-                }
-              ]
-          })
-        })
-      })
+    './awsVars': {
+      getValueFromCF: (region, stack, variables) => {
+        return `region:${region},stack:${stack},variables:${variables}`
+      }
     }
   })
   const sls = buildSls(serverlessCFVariables)
   sls.service.custom.myResoledVar = '${cfcr:region:servicename:ServiceEndpoint}' // eslint-disable-lin
   await sls.variables.populateService()
-  t.is(sls.service.custom.myResoledVar, 'https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev')
+  t.is(sls.service.custom.myResoledVar, 'region:region,stack:servicename,variables:ServiceEndpoint')
 })
 
 test('Correctly throws an error on incorrect syntax', async t => {
@@ -57,29 +43,14 @@ test('Correctly throws an error on incorrect syntax', async t => {
 
 test('Returns an error if var can`t be found', async t => {
   var serverlessCFVariables = proxyquire.noCallThru()('../src', {
-    'aws-sdk': {
-      CloudFormation: () => ({
-        describeStacks: () => ({
-          promise: () => Promise.resolve({
-              Stacks: 
-              [
-                {
-                  "Outputs": [
-                      {
-                          "OutputKey": "AnotherEndpoint",
-                          "OutputValue": "https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev",
-                          "Description": "URL of the service endpoint"
-                      }
-                  ]
-                }
-              ]
-          })
-        })
-      })
+    './awsVars': {
+      getValueFromCF: (region, stack, variables) => {
+        throw Error()
+      }
     }
   })
   const sls = buildSls(serverlessCFVariables)
-  sls.service.custom.myResoledVar = '${cfcr:region:servicename:ServiceEndpoint}' // eslint-disable-lin
+  sls.service.custom.myResoledVar = '${cfcr:region:servicename:ServiceEndpointWillBeUndefined}' // eslint-disable-lin
   let result = await sls.variables.populateService();
   t.true(typeof sls.service.custom.myResoledVar === 'undefined');
 })
@@ -88,21 +59,14 @@ test('Returns an error if var can`t be found', async t => {
 
 test('Correctly parses ssm vars', async t => {
   var serverlessCFVariables = proxyquire.noCallThru()('../src', {
-    'aws-sdk': {
-      SSM: () => ({
-        getParameter: () => ({
-          promise: () => Promise.resolve({
-              "Parameter":
-                  {
-                      "Value": "https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev",
-                  }
-          })
-        })
-      })
+    './awsVars': {
+      getValueSSMCR: (region, variables) => {
+        return `region:${region},variables:${variables}`
+      }
     }
   })
   const sls = buildSls(serverlessCFVariables)
   sls.service.custom.myResoledVar = '${ssmcr:region:name}' // eslint-disable-lin
   await sls.variables.populateService()
-  t.is(sls.service.custom.myResoledVar, 'https://abcdef.execute-api.ap-southeast-2.amazonaws.com/dev')
+  t.is(sls.service.custom.myResoledVar, 'region:region,variables:name')
 })
