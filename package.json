@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-cloudformation-cross-region-variables",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "url": "https://github.com/blueflag/serverless-plugin-cloudformation-cross-region-variables",
   "description": "Serverless plugin to get varibles from cross region cloudformation templates",
   "main": "lib/index.js",
