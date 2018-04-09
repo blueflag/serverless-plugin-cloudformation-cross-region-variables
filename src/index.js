@@ -1,5 +1,7 @@
-var AWS = require('aws-sdk')
+
 var Observable = require('rxjs/Rx').Observable
+
+import {getValueSSMCR, getValueFromCF} from './awsVars';
 
 const CF_PREFIX = 'cfcr'
 const CF_SPLIT = /(cfcr):(.*?):(.*?):([0-9a-zA-Z]*)/
@@ -7,6 +9,9 @@ const CF_SPLIT_DOT = /(cfcr):(.*?)\.(.*?):([0-9a-zA-Z]*)/
 
 const SSM_PREFIX = 'ssmcr'
 const SSM_SPLIT = /(ssmcr):(.*?):(.*)/
+
+
+
 
 export default class ServerlessCFCrossRegionVariables {
   constructor(serverless, options) {
@@ -38,52 +43,22 @@ export default class ServerlessCFCrossRegionVariables {
   }
 
   async _getValueSSMCR(region, variable, variableString) {
-    var value
-    var ssm = new AWS.SSM({
-      region
-    })
-     value = await ssm
-      .getParameter({Name: variable})
-      .promise()
-      .then(({Parameter}) => {
-        return Parameter.Value
-      })
-      .catch(ee => {
-        return;
-      });
-    this.resolvedValues[variableString] = value
-    if (!value) {
-      console.warn(`Output ${variable} could not be found in region ${region}`)
+    try{
+      var value = await getValueSSMCR(region, variable);
+      this.resolvedValues[variableString] = value;
+      return value;
+    } catch (e){
+      console.warn(e.message);
     }
-    return value;  
   }
 
   async _getValueFromCF(region, stack, variable, variableString) {
-    var value
-    var cloudformation = new AWS.CloudFormation({
-      region
-    })
-    var params = {
-      StackName: stack
+    try{
+      var value = await getValueFromCF(region, stack, variable);
+      this.resolvedValues[variableString] = value;
+      return value;
+    } catch (e){
+      console.warn(e.message);
     }
-    let cf = await cloudformation.describeStacks(params).promise()
-    if (cf.Stacks.length > 0) {
-      if (cf.Stacks[0].Outputs) {
-        value = await Observable
-          .from(cf.Stacks[0].Outputs)
-          .filter(ii => ii.OutputKey === variable)
-          .map(ii => ii.OutputValue)
-          .take(1)
-          .toPromise()
-        if (!value) {
-          console.warn(`Output ${variable} could not be found in Stack ${stack} region ${region}`)
-        }
-      }
-    } else {
-      console.warn(`Stack ${stack} could not be found in region ${region}`)
-    }
-    // Cache before returning
-    this.resolvedValues[variableString] = value
-    return value;
   }
 }
