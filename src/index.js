@@ -37,7 +37,6 @@ export default class ServerlessCFCrossRegionVariables {
         var [string, ssmcr, region, variable] = split
         return this._getValueSSMCR(region, variable, variableString)
       }
-      
       return delegate(variableString)
     }
   }
