@@ -1,13 +1,13 @@
 import AWS from 'aws-sdk'
 import {Observable} from 'rxjs/Rx'
 
-export function getValueSSMCR(region, variable){
+export function getValueSSMCR(region, variable, decrypt){
   var value
   var ssm = new AWS.SSM({
     region
   })
   return ssm
-    .getParameter({Name: variable})
+    .getParameter({Name: variable, WithDecryption: decrypt === 'true'})
     .promise()
     .then(({Parameter}) => {
       return Parameter.Value

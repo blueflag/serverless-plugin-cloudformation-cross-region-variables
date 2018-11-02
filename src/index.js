@@ -8,7 +8,7 @@ const CF_SPLIT = /(cfcr):(.*?):(.*?):([0-9a-zA-Z]*)/
 const CF_SPLIT_DOT = /(cfcr):(.*?)\.(.*?):([0-9a-zA-Z]*)/
 
 const SSM_PREFIX = 'ssmcr'
-const SSM_SPLIT = /(ssmcr):(.*?):(.*)/
+const SSM_SPLIT = /(ssmcr):(.*?):([a-zA-Z0-9_.\-/]+)[~]?(true|false)?/
 
 
 
@@ -34,16 +34,16 @@ export default class ServerlessCFCrossRegionVariables {
         if(split === null){
           throw new Error(`Invalid syntax, must be  ssmcr:region:varlocation got "${variableString}"`)
         }
-        var [string, ssmcr, region, variable] = split
-        return this._getValueSSMCR(region, variable, variableString)
+        var [string, ssmcr, region, variable, decrypt] = split;
+        return this._getValueSSMCR(region, variable, decrypt, variableString)
       }
       return delegate(variableString)
     }
   }
 
-  async _getValueSSMCR(region, variable, variableString) {
+  async _getValueSSMCR(region, variable, decrypt, variableString) {
     try{
-      var value = await getValueSSMCR(region, variable);
+      var value = await getValueSSMCR(region, variable, decrypt);
       this.resolvedValues[variableString] = value;
       return value;
     } catch (e){
