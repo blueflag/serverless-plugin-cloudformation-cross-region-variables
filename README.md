@@ -4,7 +4,7 @@ This plugin supports using [coudformation stack outputs](http://docs.aws.amazon.
 
 Adds new variable syntax to serverless formatted as such `${cfcr:Region:StackName:OutputKey}`
 
-Also now allow use of the variable syntax `${ssmcr:Region:ParamPath}` for cross region SSM parameters
+Also now allow use of the variable syntax `${ssmcr:Region:ParamPath}` for cross region SSM parameters or `${ssmcr:Region:ParamPath~true}` to decrypt secure strings values returned.
 
 ## Usage
 
