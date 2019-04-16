@@ -70,3 +70,17 @@ test('Correctly parses ssm vars', async t => {
   await sls.variables.populateService()
   t.is(sls.service.custom.myResoledVar, 'region:region,variables:name')
 })
+
+test('Parses requests for decript', async t => {
+  var serverlessCFVariables = proxyquire.noCallThru()('../src', {
+    './awsVars': {
+      getValueSSMCR: (region, variables, decript) => {
+        return `region:${region},variables:${variables}:${decript}`
+      }
+    }
+  })
+  const sls = buildSls(serverlessCFVariables)
+  sls.service.custom.myResoledVar = '${ssmcr:region:name~true}' // eslint-disable-lin
+  await sls.variables.populateService()
+  t.is(sls.service.custom.myResoledVar, 'region:region,variables:name:true')
+});
