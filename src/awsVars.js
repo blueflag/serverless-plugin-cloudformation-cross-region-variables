@@ -1,13 +1,13 @@
-var AWS = require('aws-sdk')
-var Observable = require('rxjs/Rx').Observable;
+import AWS from 'aws-sdk'
+import {Observable} from 'rxjs/Rx'
 
-export async function getValueSSMCR(region, variable){
+export function getValueSSMCR(region, variable, decrypt){
   var value
   var ssm = new AWS.SSM({
     region
   })
-  return await ssm
-    .getParameter({Name: variable})
+  return ssm
+    .getParameter({Name: variable, WithDecryption: decrypt === 'true'})
     .promise()
     .then(({Parameter}) => {
       return Parameter.Value
